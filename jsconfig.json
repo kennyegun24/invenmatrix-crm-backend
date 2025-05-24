@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@schemas/*": ["./schemas/*"]
+      // "@assets/*": ["./assets/*"],
+      // "@firebase/auth": ["./node_modules/@firebase/auth/dist/index.rn.d.ts"]
+    }
+  },
+  "include": [
+    "**/*.js"
+    // "**/*.jsx",
+    // ".expo/types/**/*.ts",
+    // "expo-env.d.ts",
+    // "types/**/*.d.ts",
+    // "utils/profileOptions.js"
+  ]
+}
