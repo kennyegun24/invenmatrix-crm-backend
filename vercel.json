@@ -1,8 +1,8 @@
 {
   "functions": {
-    "index.js": {
+    "api/index.js": {
       "runtime": "@vercel/node@2.7.0"
     }
   },
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.js" }]
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
 }
