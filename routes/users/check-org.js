@@ -8,6 +8,7 @@ const router = express.Router();
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const uid = req.user?.uid;
+    console.log(uid);
     const getUser = await userSchema.findOne({ uid });
     if (!getUser) {
       return sendError(res, "User not found", 404);
