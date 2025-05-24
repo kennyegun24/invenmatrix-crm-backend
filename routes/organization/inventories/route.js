@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-const Inventory = require("@schemas/inventorySchema");
-const { error, success } = require("@/utils/apiResponse");
+// const Inventory = require("@schemas/inventorySchema");
+// const { error, success } = require("@/utils/apiResponse");
+
+const Inventory = require("../../../schemas/inventorySchema");
+const { error, success } = require("../../../utils/apiResponse");
 const mongoose = require("mongoose");
-const Folder = require("@/schemas/folderSchema");
 
 // CREATE NEW INVENTORY
 router.post("/", async (req, res) => {

@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-const Folder = require("@schemas/folderSchema");
-const Inventory = require("@schemas/inventorySchema");
-const { error, success } = require("@/utils/apiResponse");
+// const Folder = require("../../schemas/folderSchema");
+// const Inventory = require("../../schemas/inventorySchema");
+const Inventory = require("../../../../schemas/inventorySchema");
+const Folder = require("../../../../schemas/folderSchema");
+const { error, success } = require("../../../../utils/apiResponse");
 
 // PUT /api/folder/:folderId/add-inventory
 router.put("/:folderId/add-inventory", async (req, res) => {

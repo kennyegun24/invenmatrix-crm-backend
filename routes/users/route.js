@@ -1,7 +1,7 @@
 const express = require("express");
 const { error, success } = require("../../utils/apiResponse");
 const userSchema = require("../../schemas/userSchema");
-const authMiddleware = require("@/middleware");
+const authMiddleware = require("../../middleware");
 const router = express.Router();
 
 router.post("/new", authMiddleware, async (req, res) => {

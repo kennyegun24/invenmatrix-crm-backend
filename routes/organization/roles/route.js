@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Role = require("../../../schemas/roleSchema");
 const Organization = require("../../../schemas/organizationSchema");
-const { success, error } = require("@/utils/apiResponse");
-
+const { error, success } = require("../../../utils/apiResponse");
 // CREATE NEW ROLE FOR ORGANIZATION TEAM MEMBERS
 router.post("/create", async (req, res) => {
   try {

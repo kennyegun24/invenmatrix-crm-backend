@@ -2,7 +2,7 @@ const express = require("express");
 const Organization = require("../../schemas/organizationSchema");
 const { error, success } = require("../../utils/apiResponse");
 const User = require("../../schemas/userSchema");
-const authMiddleware = require("@/middleware");
+const authMiddleware = require("../../middleware");
 const router = express.Router();
 
 // CREATE ORGANIZATION

@@ -1,8 +1,8 @@
 const express = require("express");
 const { error: sendError, success } = require("../../utils/apiResponse");
-const authMiddleware = require("@/middleware");
-const userSchema = require("@/schemas/userSchema");
-const organizationSchema = require("@/schemas/organizationSchema");
+const authMiddleware = require("../..//middleware");
+const userSchema = require("../..//schemas/userSchema");
+const organizationSchema = require("../../schemas/organizationSchema");
 const router = express.Router();
 
 router.get("/", authMiddleware, async (req, res) => {
