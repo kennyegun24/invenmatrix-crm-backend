@@ -2,48 +2,67 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const User = require("../../../schemas/userSchema");
 const Organization = require("../../../schemas/organizationSchema");
-const { error, success } = require("../../../utils/apiResponse");
+const { error: reqError, success } = require("../../../utils/apiResponse");
 const folderSchema = require("../../../schemas/folderSchema");
+const authMiddleware = require("@/middleware");
+const userSchema = require("../../../schemas/userSchema");
+const {
+  getAllFoldersWithNested,
+} = require("../../../utils/fetchNestedFolders");
 
 // CREATE NEW FOLDER
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const { orgId } = req.params;
-    if (!orgId) return error(res, "Organization ID not present in params");
-    const { userId, folder_name, parent } = req.body;
-    if ((!userId, !folder_name))
-      return error(res, "Missing fields: folder_name, userId");
-
+    if (!orgId)
+      return reqError(res, "Organization ID not present in params", 404);
+    const { folder_name, folder_image, parent } = req.body;
+    if (!folder_name)
+      return reqError(res, "Missing fields: folder_name, userId", 404);
+    const uid = req.user?.uid;
+    const user = await userSchema.findOne({ uid: uid });
     let ancestors = [];
 
     if (parent) {
       const parentFolder = await folderSchema.findById(parent);
       if (!parentFolder) {
-        return error(res, "Parent folder not found", 404);
+        return reqError(res, "Parent folder not found", 404);
       }
       ancestors = [...parentFolder.ancestors, parentFolder._id];
     }
 
     const newFolder = new folderSchema({
       folder_name,
-      user: userId,
+      folder_image,
+      user: user._id,
       parent: parent || null,
       ancestors,
+      organization: orgId,
     });
 
     await newFolder.save();
 
     return success(res, "folder created", 201);
   } catch (error) {
-    return error(res, "Internal server error", 500);
+    console.log(error);
+    return reqError(res, "Internal server error", 500);
   }
 });
 
 // GET ALL FOLDERS IN ORGANIZATION
-router.get("/all", async (req, res) => {
+router.get("/all", authMiddleware, async (req, res) => {
+  const { orgId } = req.params;
+  console.log(orgId, "allfolders");
+  if (!orgId) {
+    return error(res, "orgId ID is required", 400);
+  }
   try {
-  } catch (error) {
-    return error(res, "Internal server error", 500);
+    const getFolders = await getAllFoldersWithNested(orgId);
+    console.log(getFolders);
+    return success(res, "", 200, { getFolders });
+  } catch (err) {
+    console.error("Error fetching root folders and orphaned inventory:", err);
+    return reqError(res, "Internal server error", 500);
   }
 });
 
@@ -55,7 +74,7 @@ router.delete("/:folderId", async (req, res) => {
   try {
     // Find the target folder
     const rootFolder = await folderSchema.findById(folderId);
-    if (!rootFolder) return error(res, "Folder not found", 404);
+    if (!rootFolder) return reqError(res, "Folder not found", 404);
 
     // Find all descendant folders (recursive)
     const allFolders = await folderSchema.find({
@@ -94,31 +113,33 @@ router.delete("/:folderId", async (req, res) => {
       200
     );
   } catch (err) {
-    console.error("Recursive folder deletion failed:", err);
-    return error(res, "Internal server error", 500);
+    console.reqError("Recursive folder deletion failed:", err);
+    return reqError(res, "Internal server error", 500);
   }
 });
 
 // UPDATE FOLDER
 router.put("/:folderId", async (req, res) => {
   const { folderId } = req.params;
-  const { folder_name } = req.body;
+  console.log(folderId);
+  const { folder_name, folder_image } = req.body;
 
-  if (!folder_name) return error(res, "Folder name is required", 400);
+  if (!folder_name && !folder_image)
+    return reqError(res, "Folder name is required", 400);
 
   try {
     const folder = await folderSchema.findByIdAndUpdate(
       folderId,
-      { folder_name },
+      { folder_name, folder_image },
       { new: true }
     );
 
-    if (!folder) return error(res, "Folder not found", 404);
+    if (!folder) return reqError(res, "Folder not found", 404);
 
     return success(res, "Folder name updated successfully", 200, folder);
   } catch (err) {
-    console.error("Update folder name error:", err);
-    return error(res, "Internal server error", 500);
+    console.reqError("Update folder name error:", err);
+    return reqError(res, "Internal server error", 500);
   }
 });
 

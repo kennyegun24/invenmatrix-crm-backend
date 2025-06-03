@@ -9,6 +9,11 @@ const FolderSchema = new Schema(
       trim: true,
     },
 
+    folder_image: {
+      type: String,
+      trim: true,
+    },
+
     ancestors: [
       {
         type: Schema.Types.ObjectId,
@@ -39,7 +44,6 @@ const FolderSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Inventory",
-        unique: true, // Ensure unique products
       },
     ],
   },

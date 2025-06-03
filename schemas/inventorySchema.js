@@ -50,6 +50,7 @@ const InventorySchema = new mongoose.Schema({
 
   low_stock_threshold: { type: Number, default: 5 },
 
+  day_purchased: { type: Date, default: Date.now },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });

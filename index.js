@@ -1,5 +1,6 @@
 require("module-alias/register");
 
+const cookieParser = require("cookie-parser");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -13,6 +14,7 @@ const team = require("./routes/organization/team/route");
 const roles = require("./routes/organization/roles/route");
 const inventories = require("./routes/organization/inventories/route");
 const folder = require("./routes/organization/folders/route");
+const folderList = require("./routes/organization/folders/items/route");
 const moveFolder = require("./routes/organization/folders/move/route");
 const folderInventory = require("./routes/organization/folders/add-inventory/route");
 
@@ -21,9 +23,11 @@ app.use(express.json());
 // app.use(express.json())
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:3000",
+    credentials: true,
   })
 );
+app.use(cookieParser());
 
 const startServer = async () => {
   try {
@@ -36,6 +40,7 @@ const startServer = async () => {
     app.use("/organization/team", team);
     app.use("/organization/roles", roles);
     app.use("/organization/:orgId/folders", folder);
+    app.use("/organization/:orgId/folders/lists", folderList);
     app.use("/organization/:orgId/folders/move", moveFolder);
     app.use("/organization/:orgId/folders/inventory", folderInventory);
     app.use("/organization/:orgId/inventories", inventories);

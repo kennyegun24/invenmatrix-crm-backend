@@ -16,11 +16,12 @@ router.get("/", authMiddleware, async (req, res) => {
     const checkOrg = await organizationSchema.findOne({
       $or: [{ owner: getUser._id }, { "team_members.user": getUser._id }],
     });
+    console.log(checkOrg);
     if (!checkOrg) {
       return sendError(res, "User has no organization", 404);
     }
 
-    return success(res, "success", 200, true);
+    return success(res, "success", 200, { status: true, _id: checkOrg._id });
     // console.log(uid);
   } catch (error) {
     return sendError(res, "something went wrong", 500);
