@@ -114,7 +114,7 @@ async function updateSomething() {
 
 // Schedule the cron job
 // This runs every minute. Adjust as needed.
-// module.exports = updateSomething;
+module.exports = updateSomething;
 // Keep the process alive
 console.log("Cron job scheduler started...");
 
