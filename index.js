@@ -34,7 +34,6 @@ const google_redirect = require("./routes/oauth/google/redirect");
 const discord = require("./routes/oauth/discord/discord");
 
 dotenv.config();
-app.use(express.json());
 // app.use(express.json())
 app.use(
   cors({
@@ -44,6 +43,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(express.json());
 app.use(cookieParser());
 
 const startServer = async () => {
