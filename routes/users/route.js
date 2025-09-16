@@ -27,7 +27,7 @@ router.post("/new", authMiddleware, async (req, res) => {
   }
 });
 
-router.delete("", async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
   } catch (error) {}
 });
