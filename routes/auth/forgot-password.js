@@ -28,6 +28,7 @@ const msg = ({ redirect_link, email, full_name }) => {
 };
 
 async function sendPasswordResetLink(userEmail, name) {
+  console.log("send function");
   const actionCodeSettings = {
     url: `${process.env.FRONTEND_URL}/auth/reset-password?email=${userEmail}`, // frontend page
     handleCodeInApp: true,
@@ -36,7 +37,7 @@ async function sendPasswordResetLink(userEmail, name) {
   const redirect_link = await admin
     .auth()
     .generatePasswordResetLink(userEmail, actionCodeSettings);
-
+  console.log("form link");
   await sgMail.send(
     msg({
       redirect_link,
@@ -44,7 +45,7 @@ async function sendPasswordResetLink(userEmail, name) {
       email: userEmail,
     })
   );
-
+  console.log("send link");
   return link;
 }
 
@@ -53,21 +54,23 @@ async function sendPasswordResetLink(userEmail, name) {
 // Step 1: Request password reset link
 router.post("/forgot-password", async (req, res) => {
   try {
+    console.log("forgot");
     const { userEmail } = req.body;
     if (!userEmail) {
+      console.log("no user email");
       return error(res, "Email is required", 400);
     }
-
+    console.log("user email");
     const findUser = await userSchema.findOne({ email_address: userEmail });
     if (!findUser) {
       return error(res, "User not found", 404);
     }
-
+    console.log("send link");
     await sendPasswordResetLink(
       userEmail,
       `${findUser.first_name} ${findUser.last_name}`
     );
-
+    console.log("sent link");
     return success(res, "Password reset link sent to email", 200, {});
   } catch (err) {
     console.error(
