@@ -52,13 +52,13 @@ router.post("/", authMiddleware, async (req, res) => {
 // GET ALL FOLDERS IN ORGANIZATION
 router.get("/all", authMiddleware, async (req, res) => {
   const { orgId } = req.params;
-  console.log(orgId, "allfolders");
+  // console.log(orgId, "allfolders");
   if (!orgId) {
     return error(res, "orgId ID is required", 400);
   }
   try {
     const getFolders = await getAllFoldersWithNested(orgId);
-    console.log(getFolders);
+    // console.log(getFolders);
     return success(res, "", 200, { getFolders });
   } catch (err) {
     console.error("Error fetching root folders and orphaned inventory:", err);

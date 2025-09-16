@@ -1,4 +1,5 @@
 require("module-alias/register");
+const cron = require("node-cron");
 
 const cookieParser = require("cookie-parser");
 const express = require("express");
@@ -17,6 +18,20 @@ const folder = require("./routes/organization/folders/route");
 const folderList = require("./routes/organization/folders/items/route");
 const moveFolder = require("./routes/organization/folders/move/route");
 const folderInventory = require("./routes/organization/folders/add-inventory/route");
+const customer = require("./routes/organization/customer/route");
+const order = require("./routes/organization/orders/route");
+const updateSomething = require("./cron/check-stocks");
+const automation = require("./routes/organization/automation/route");
+const accounts = require("./routes/organization/automation/accounts/route");
+
+// AUTH
+const verify_email = require("./routes/auth/verify-email");
+const forgot_password = require("./routes/auth/forgot-password");
+
+// THIRD PARTY OAUTHS
+const google = require("./routes/oauth/google/google");
+const google_redirect = require("./routes/oauth/google/redirect");
+const discord = require("./routes/oauth/discord/discord");
 
 dotenv.config();
 app.use(express.json());
@@ -44,6 +59,21 @@ const startServer = async () => {
     app.use("/organization/:orgId/folders/move", moveFolder);
     app.use("/organization/:orgId/folders/inventory", folderInventory);
     app.use("/organization/:orgId/inventories", inventories);
+    app.use("/organization/:orgId/customers", customer);
+    app.use("/organization/:orgId/orders", order);
+
+    // AUTH ENDPOINTS
+    app.use("/auth", verify_email);
+    app.use("/auth", forgot_password);
+
+    // OAUTH ENDPOINTS
+    app.use("/organization/:orgId/oauth/google", google);
+    app.use("/oauth/google/", google_redirect);
+    app.use("/oauth/discord", discord);
+
+    // AUTOMATION / ACCOUNTS ENDPOINTS
+    app.use("/organization/:orgId/automation/accounts", accounts);
+    app.use("/organization/:orgId/automation", automation);
 
     app.listen(4000, () => {
       console.log("Server is running on port 4000");
@@ -52,5 +82,7 @@ const startServer = async () => {
     console.error("Failed to start server:", error);
   }
 };
-
+cron.schedule("* * * * *", () => {
+  updateSomething();
+});
 startServer();

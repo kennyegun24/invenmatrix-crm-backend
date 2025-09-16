@@ -11,7 +11,7 @@ const itemSchema = new mongoose.Schema(
     quantity: { type: Number, required: true },
     price: { type: Number, required: true },
     total: { type: Number, required: true }, // price * quantity
-    variant: { type: String }, // e.g., size, color
+    discount: { type: Number, default: 0 },
   },
   { _id: false }
 );
@@ -20,9 +20,10 @@ const totalSchema = new mongoose.Schema(
   {
     sub_total: { type: Number, required: true },
     tax: { type: Number, default: 0 },
-    shipping: { type: Number, default: 0 },
-    discount: { type: Number, default: 0 },
+    shipping_cost: { type: Number, default: 0 },
+    shipping_time: { type: Number, default: 0 },
     grand_total: { type: Number, required: true },
+    discount: { type: Number, default: 0 },
   },
   { _id: false }
 );
@@ -44,7 +45,7 @@ const paymentSchema = new mongoose.Schema(
 const fulfilmentSchema = new mongoose.Schema(
   {
     shipped_at: { type: Date },
-    delivered_at: { type: Date },
+    expected_delivery_date: { type: Date },
     tracking_number: { type: String },
   },
   { _id: false }

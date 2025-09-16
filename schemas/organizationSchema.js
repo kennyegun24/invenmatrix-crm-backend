@@ -22,6 +22,10 @@ const organizationSchema = new mongoose.Schema(
   {
     business_name: { type: String, required: true },
     company_email: { type: String, required: true },
+    isDemo: { type: Boolean, default: false },
+    fax: { type: String },
+    cnotact_person: { type: String },
+    company_phone_secondary: { type: String },
     company_phone: { type: String },
     state: { type: String },
     country: { type: String },

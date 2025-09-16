@@ -15,42 +15,51 @@ const InventorySchema = new mongoose.Schema({
     required: true,
   },
 
-  product_name: { type: String, required: true },
+  product_name: { type: String, required: true }, // added
   description: { type: String },
-  value: { type: Number, default: 0 }, // Optional field, can store item worth or special value
-  selling_price: { type: Number, required: true },
+  // cost_price: { type: Number, default: 0 }, // Optional field, can store item worth or special value
+  selling_price: { type: Number, required: true }, // added
 
-  variants: [VariantSchema], // e.g. Size, Color
+  variants: [VariantSchema], // e.g. Size, Color // added
 
-  barcode: { type: String, unique: true, sparse: true },
+  barcode: { type: String, unique: true, sparse: true }, // added
 
   total_sold: { type: Number, default: 0 },
-  in_stock: { type: Number, default: 0 },
+  in_stock: { type: Number, default: 0 }, // added
 
-  tags: [{ type: String }],
+  tags: [{ type: String }], // added
 
-  images: [{ type: String }], // Store image URLs or file paths
+  images: {
+    type: [String], // Array of strings (URLs/paths)
+    validate: {
+      validator: function (val) {
+        return val.length <= 5;
+      },
+      message: "You can upload a maximum of 5 images.",
+    },
+  }, // Store image URLs or file paths // added
 
   category: { type: String }, // Can also be ref if you later have a Category collection
-  supplier: { type: String }, // Can also be ref later (Supplier collection)
+  supplier_name: { type: String }, // Can also be ref later (Supplier collection) // added
+  supplier_info: { type: String }, // added
 
   status: {
     type: String,
     enum: ["active", "inactive", "archived"],
     default: "active",
-  },
+  }, // added
 
-  location: { type: String }, // Physical storage location
+  location: { type: String }, // Physical storage location // added
 
-  cost_price: { type: Number, default: 0 },
-  shipping_time: { type: String }, // e.g. '3-5 days'
-  shipping_cost: { type: Number, default: 0 },
+  cost_price: { type: Number, default: 0 }, // added
+  shipping_time: { type: String }, // e.g. '3-5 days' // added
+  shipping_cost: { type: Number, default: 0 }, // added
 
   profit_margin: { type: Number, default: 0 }, // Can be auto-calculated too if needed
 
-  low_stock_threshold: { type: Number, default: 5 },
+  low_stock_threshold: { type: Number, default: 5 }, // added
 
-  day_purchased: { type: Date, default: Date.now },
+  day_purchased: { type: Date, default: Date.now }, // added
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });

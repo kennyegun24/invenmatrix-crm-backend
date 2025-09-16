@@ -22,6 +22,7 @@ const customerSchema = new mongoose.Schema(
     last_name: { type: String, required: true },
     email_address: { type: String, lowercase: true, trim: true },
     phone_number: { type: String },
+    age: { type: Number },
 
     status: {
       type: String,
@@ -33,6 +34,7 @@ const customerSchema = new mongoose.Schema(
 
     tax_number: { type: String },
     notes: { type: String },
+    country: { type: String },
 
     total_spent: { type: Number, default: 0 }, // Sum of orders
     total_orders: { type: Number, default: 0 }, // Count of orders

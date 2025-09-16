@@ -35,7 +35,7 @@ router.get("/root-and-orphans", async (req, res) => {
     //   organization: orgId,
     //   _id: { $nin: usedInventoryIds },
     // });
-
+    console.log(rootFolders);
     return success(res, "", 200, { rootFolders });
   } catch (err) {
     console.error("Error fetching root folders and orphaned inventory:", err);

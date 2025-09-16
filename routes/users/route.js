@@ -7,13 +7,13 @@ const router = express.Router();
 router.post("/new", authMiddleware, async (req, res) => {
   try {
     const { email, first_name, last_name } = req.body;
-    console.log(email, first_name, last_name);
+    // console.log(email, first_name, last_name);
     if (!email || !first_name || !last_name) {
       return error(res, "Required params not present", 400);
     }
     const uid = await req.user?.uid;
     const findUser = await userSchema.findOne({ email_address: email });
-    console.log(findUser);
+    // console.log(findUser);
     if (findUser) return error(res, "User already exist!", 400);
     await userSchema.create({
       email_address: email,
