@@ -18,16 +18,45 @@ const msg = ({ link, email }) => ({
   dynamicTemplateData: { link },
 });
 async function sendVerificationEmail(userEmail) {
-  const actionCodeSettings = {
-    url: `${process.env.FRONTEND_URL}/auth/verify-email?email=${userEmail}`,
-    handleCodeInApp: true,
-  };
+  try {
+    const actionCodeSettings = {
+      url: `${
+        process.env.FRONTEND_URL
+      }/auth/verify-email?email=${encodeURIComponent(userEmail)}`,
+      handleCodeInApp: true,
+    };
 
-  const link = await admin
-    .auth()
-    .generateEmailVerificationLink(userEmail, actionCodeSettings);
-  await sgMail.send(msg({ link, email: userEmail }));
-  return link;
+    // Generate Firebase verification link
+    const firebaseLink = await admin
+      .auth()
+      .generateEmailVerificationLink(userEmail, actionCodeSettings);
+
+    if (!firebaseLink) {
+      throw new Error("Firebase did not return a verification link.");
+    }
+
+    // ✅ Extract oobCode and build clean link
+    const { finalLink } = extractOobCode(
+      firebaseLink,
+      userEmail,
+      "verify-email"
+    );
+
+    // Send email with the cleaned-up link
+    await sgMail.send(
+      msg({
+        link: finalLink,
+        email: userEmail,
+      })
+    );
+
+    console.log("verification email sent successfully");
+
+    return finalLink;
+  } catch (err) {
+    console.error("Error sending verification email:", err.message);
+    return null;
+  }
 }
 
 // ================= ROUTES =================

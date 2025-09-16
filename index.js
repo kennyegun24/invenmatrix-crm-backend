@@ -37,7 +37,11 @@ dotenv.config();
 // app.use(express.json())
 app.use(
   cors({
-    origin: ["https://invenmatrix.com", "https://www.invenmatrix.com"],
+    origin: [
+      "https://invenmatrix.com",
+      "https://www.invenmatrix.com",
+      "http://172.20.10.3:3000",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })

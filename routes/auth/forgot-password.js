@@ -5,6 +5,7 @@ const userSchema = require("../../schemas/userSchema");
 const router = express.Router();
 const sgMail = require("@sendgrid/mail");
 const { default: axios } = require("axios");
+const extractOobCode = require("../../utils/email/extractOOBcode");
 
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
 
@@ -27,25 +28,50 @@ const msg = ({ redirect_link, email, full_name }) => {
 };
 
 async function sendPasswordResetLink(userEmail, name) {
-  console.log("send function");
-  const actionCodeSettings = {
-    url: `${process.env.FRONTEND_URL}/auth/reset-password?email=${userEmail}`, // frontend page
-    handleCodeInApp: true,
-  };
+  try {
+    console.log("send function");
 
-  const redirect_link = await admin
-    .auth()
-    .generatePasswordResetLink(userEmail, actionCodeSettings);
-  console.log("form link");
-  await sgMail.send(
-    msg({
+    const actionCodeSettings = {
+      url: `${
+        process.env.FRONTEND_URL
+      }/auth/reset-password?email=${encodeURIComponent(userEmail)}`, // frontend page
+      handleCodeInApp: true,
+    };
+
+    // Generate Firebase reset link
+    const redirect_link = await admin
+      .auth()
+      .generatePasswordResetLink(userEmail, actionCodeSettings);
+
+    if (!redirect_link) {
+      throw new Error("Firebase did not return a reset link.");
+    }
+
+    console.log("generated reset link:", redirect_link);
+
+    // ✅ Use helper function
+    const finalLink = extractOobCode(
       redirect_link,
-      full_name: name,
-      email: userEmail,
-    })
-  );
-  console.log("send link");
-  return;
+      userEmail,
+      "reset-password"
+    );
+
+    // Send email with the final link
+    await sgMail.send(
+      msg({
+        redirect_link: finalLink,
+        full_name: name,
+        email: userEmail,
+      })
+    );
+
+    console.log("reset email sent successfully");
+
+    return finalLink;
+  } catch (err) {
+    console.error("Error sending password reset link:", err.message);
+    return null;
+  }
 }
 
 // ============ ROUTES ============
