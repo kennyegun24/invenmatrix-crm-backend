@@ -37,12 +37,12 @@ dotenv.config();
 // app.use(express.json())
 app.use(
   cors({
-    origin: "https://invenmatrix.com",
+    origin: ["https://invenmatrix.com", "https://www.invenmatrix.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Token"],
     credentials: true,
   })
 );
+app.options("*", cors());
 app.use(express.json());
 app.use(cookieParser());
 
