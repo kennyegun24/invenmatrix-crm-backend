@@ -3,7 +3,6 @@ const express = require("express");
 const { error, success } = require("../../utils/apiResponse");
 const userSchema = require("../../schemas/userSchema");
 const router = express.Router();
-router.use(express.json());
 const sgMail = require("@sendgrid/mail");
 const { default: axios } = require("axios");
 
@@ -46,7 +45,7 @@ async function sendPasswordResetLink(userEmail, name) {
     })
   );
   console.log("send link");
-  return link;
+  return;
 }
 
 // ============ ROUTES ============
