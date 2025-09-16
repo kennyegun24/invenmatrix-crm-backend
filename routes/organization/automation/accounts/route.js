@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const { error, success } = require("../../../../utils/apiResponse");
-const accountsSchema = require("@/schemas/accountsSchema");
+const accountsSchema = require("../../../../schemas/accountsSchema");
 
 router.get("/", async (req, res) => {
   try {

@@ -4,7 +4,7 @@ const User = require("../../../schemas/userSchema");
 const Organization = require("../../../schemas/organizationSchema");
 const { error: reqError, success } = require("../../../utils/apiResponse");
 const folderSchema = require("../../../schemas/folderSchema");
-const authMiddleware = require("@/middleware");
+const authMiddleware = require("../../../middleware");
 const userSchema = require("../../../schemas/userSchema");
 const {
   getAllFoldersWithNested,

@@ -1,5 +1,5 @@
 const express = require("express");
-const { getGoogleAuthURL } = require("@/libs/google");
+const { getGoogleAuthURL } = require("../../../libs/google");
 const router = express.Router({ mergeParams: true });
 
 router.get("/", async (req, res) => {

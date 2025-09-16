@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 // const Inventory = require("@schemas/inventorySchema");
-// const { error, success } = require("@/utils/apiResponse");
 
 const Inventory = require("../../../schemas/inventorySchema");
 const { error, success } = require("../../../utils/apiResponse");

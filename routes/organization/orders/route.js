@@ -1,9 +1,9 @@
 // routes/ORDER.js
 const express = require("express");
 const mongoose = require("mongoose");
-const orderSchema = require("@/schemas/orderSchema");
-const inventorySchema = require("@/schemas/inventorySchema");
-const customerSchema = require("@/schemas/customerSchema");
+const orderSchema = require("../../../schemas/orderSchema");
+const inventorySchema = require("../../../schemas/inventorySchema");
+const customerSchema = require("../../../schemas/customerSchema");
 
 const router = express.Router({ mergeParams: true });
 

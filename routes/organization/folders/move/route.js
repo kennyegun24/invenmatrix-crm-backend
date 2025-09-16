@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 // const Folder = require("@schemas/folderSchema");
-// const { error, success } = require("@/utils/apiResponse");
 
 const Folder = require("../../../../schemas/folderSchema");
 const { error, success } = require("../../../../utils/apiResponse");

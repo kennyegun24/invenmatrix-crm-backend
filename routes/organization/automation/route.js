@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const { error, success } = require("../../../utils/apiResponse");
-const automationSchema = require("@/schemas/automationSchema");
+const automationSchema = require("../../../schemas/automationSchema");
 
 // ✅ GET all automations for org
 router.get("/", async (req, res) => {

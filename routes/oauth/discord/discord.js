@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
-const organizationSchema = require("@/schemas/organizationSchema");
-const accountsSchema = require("@/schemas/accountsSchema");
+const organizationSchema = require("../../../schemas/organizationSchema");
+const accountsSchema = require("../../../schemas/accountsSchema");
 // const { saveOrgDiscordMapping, getOrgDiscordMapping } = require("./db");
 const CryptoJS = require("crypto-js");
 

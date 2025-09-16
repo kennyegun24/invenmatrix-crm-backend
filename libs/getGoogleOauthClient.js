@@ -1,5 +1,5 @@
 const { google } = require("googleapis");
-const organizationSchema = require("@/schemas/organizationSchema");
+const organizationSchema = require("../schemas/organizationSchema");
 const provider = "google/sheets";
 
 async function getOauthClient(_org) {

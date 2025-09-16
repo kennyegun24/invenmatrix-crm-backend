@@ -1,13 +1,10 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-// const Folder = require("@schemas/folderSchema");
-// const Inventory = require("@schemas/inventorySchema");
-// const { success, error } = require("@/utils/apiResponse");
 
 const Inventory = require("../../../../schemas/inventorySchema");
 const Folder = require("../../../../schemas/folderSchema");
 const { error, success } = require("../../../../utils/apiResponse");
-const authMiddleware = require("@/middleware");
+const authMiddleware = require("../../../../middleware");
 
 // GET /api/folders/root-and-orphans?organization=orgId
 router.get("/root-and-orphans", async (req, res) => {

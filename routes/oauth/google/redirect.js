@@ -1,10 +1,10 @@
 const express = require("express");
-const { oauth2Client } = require("@/libs/google");
+const { oauth2Client } = require("../../../libs/google");
 const router = express.Router();
 const CryptoJS = require("crypto-js");
-const organizationSchema = require("@/schemas/organizationSchema");
-const accountsSchema = require("@/schemas/accountsSchema");
-const { listUserSheets } = require("@/libs/updateSheet");
+const organizationSchema = require("../../../schemas/organizationSchema");
+const accountsSchema = require("../../../schemas/accountsSchema");
+const { listUserSheets } = require("../../../libs/updateSheet");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://172.20.10.3:3000";
 const provider = "google/sheets"; // or pass this via state if you support multiple

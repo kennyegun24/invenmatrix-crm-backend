@@ -1,5 +1,5 @@
 const sgMail = require("@sendgrid/mail");
-const inventorySchema = require("@/schemas/inventorySchema");
+const inventorySchema = require("../schemas/inventorySchema");
 
 // This is your function that should always run
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
