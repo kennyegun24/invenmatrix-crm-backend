@@ -38,7 +38,7 @@ app.use(express.json());
 // app.use(express.json())
 app.use(
   cors({
-    origin: process.env.ALLOW_ORIGIN,
+    origin: "https://invenmatrix.com",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Token"],
     credentials: true,
@@ -84,7 +84,7 @@ const startServer = async () => {
     console.error("Failed to start server:", error);
   }
 };
-cron.schedule("* * * * *", () => {
-  updateSomething();
-});
+// cron.schedule("* * * * *", () => {
+//   updateSomething();
+// });
 startServer();
