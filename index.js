@@ -20,7 +20,7 @@ const moveFolder = require("./routes/organization/folders/move/route");
 const folderInventory = require("./routes/organization/folders/add-inventory/route");
 const customer = require("./routes/organization/customer/route");
 const order = require("./routes/organization/orders/route");
-const updateSomething = require("./cron/check-stocks");
+// const updateSomething = require("./cron/check-stocks");
 const automation = require("./routes/organization/automation/route");
 const accounts = require("./routes/organization/automation/accounts/route");
 
