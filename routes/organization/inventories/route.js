@@ -6,6 +6,7 @@ const Inventory = require("../../../schemas/inventorySchema");
 const { error, success } = require("../../../utils/apiResponse");
 const mongoose = require("mongoose");
 const authMiddleware = require("../../../middleware");
+const demoOrgMiddleware = require("@/demoOrgMiddleware");
 
 // CREATE NEW INVENTORY
 router.post("/", authMiddleware, async (req, res) => {
@@ -90,10 +91,10 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", demoOrgMiddleware, async (req, res) => {
   try {
     console.log("fetch inventories");
-    const { orgId } = req.params;
+    const orgId = req.orgId;
     const { category } = req.query;
     const query = { organization: orgId };
     if (
@@ -120,11 +121,12 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:productId", async (req, res) => {
+router.get("/:productId", demoOrgMiddleware, async (req, res) => {
   try {
     console.log("fetch inventories");
-    const { orgId, productId } = req.params;
-
+    const { productId } = req.params;
+    const orgId = req.orgId;
+    console.log(orgId, "orgId");
     const inventories = await Inventory.findOne({
       organization: orgId,
       _id: productId,

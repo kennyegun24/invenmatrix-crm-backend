@@ -4,6 +4,7 @@ const { error, success } = require("../../utils/apiResponse");
 const User = require("../../schemas/userSchema");
 const authMiddleware = require("../../middleware");
 const organizationSchema = require("../../schemas/organizationSchema");
+const demoOrgMiddleware = require("@/demoOrgMiddleware");
 const router = express.Router();
 
 // CREATE ORGANIZATION
@@ -85,12 +86,12 @@ router.post("/create", authMiddleware, async (req, res) => {
 });
 
 // GET ORGANIZATION DETAILS
-router.get("/:id", async (req, res) => {
+router.get("/:id", demoOrgMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
+    const orgId = req.orgId;
 
     // Find organization by ID and populate owner/team_members if needed
-    const organization = await organizationSchema.findById(id);
+    const organization = await organizationSchema.findById(orgId);
     // .populate("owner", "name email uid") // populate owner details
     // .populate("team_members.user", "name email uid"); // populate team members
 
