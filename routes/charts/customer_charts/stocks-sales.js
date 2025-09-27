@@ -2,9 +2,9 @@ const { default: mongoose } = require("mongoose");
 const demoOrgMiddleware = require("../../../demoOrgMiddleware");
 const orderSchema = require("../../../schemas/orderSchema");
 const express = require("express");
-const inventorySchema = require("@/schemas/inventorySchema");
-const customerSchema = require("@/schemas/customerSchema");
-const stockMovementSchema = require("@/schemas/stockMovementSchema");
+const inventorySchema = require("../../../schemas/inventorySchema");
+const customerSchema = require("../../../schemas/customerSchema");
+const stockMovementSchema = require("../../../schemas/stockMovementSchema");
 
 const router = express.Router();
 

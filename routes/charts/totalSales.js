@@ -1,8 +1,8 @@
-const demoOrgMiddleware = require("@/demoOrgMiddleware");
-const customerSchema = require("@/schemas/customerSchema");
-const orderSchema = require("@/schemas/orderSchema");
-const countries = require("@/utils/countries");
-const { generateDateRange } = require("@/utils/generateDateRange");
+const demoOrgMiddleware = require("../../demoOrgMiddleware");
+const customerSchema = require("../../schemas/customerSchema");
+const orderSchema = require("../../schemas/orderSchema");
+const countries = require("../../utils/countries");
+const { generateDateRange } = require("../../utils/generateDateRange");
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
