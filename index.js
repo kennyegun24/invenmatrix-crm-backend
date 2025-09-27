@@ -33,6 +33,12 @@ const google = require("./routes/oauth/google/google");
 const google_redirect = require("./routes/oauth/google/redirect");
 const discord = require("./routes/oauth/discord/discord");
 
+// METRICS
+const total_sales_metric = require("./routes/charts/metrics/totalSales");
+const total_sales = require("./routes/charts/totalSales");
+const monthlyIncome = require("./routes/charts/monthlyIncome");
+const customerCharts = require("./routes/charts/customer_charts/stocks-sales");
+
 dotenv.config();
 // app.use(express.json())
 app.use(
@@ -80,6 +86,12 @@ const startServer = async () => {
     // AUTOMATION / ACCOUNTS ENDPOINTS
     app.use("/organization/:orgId/automation/accounts", accounts);
     app.use("/organization/:orgId/automation", automation);
+
+    // METRICS/CHARTS ENDPOINTS
+    app.use("/metrics", total_sales_metric);
+    app.use("/charts", total_sales);
+    app.use("/charts", monthlyIncome);
+    app.use("/charts", customerCharts);
 
     app.listen(4000, () => {
       console.log("Server is running on port 4000");

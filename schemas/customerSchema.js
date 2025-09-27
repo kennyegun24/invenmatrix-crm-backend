@@ -57,7 +57,10 @@ const customerSchema = new mongoose.Schema(
 
     last_order_at: { type: Date },
 
-    source: { type: String }, // E.g., "Website", "POS", "Imported"
+    source: {
+      type: String,
+      enum: ["website", "pos", "referral", "organiza", "ads", "social_media"],
+    }, // E.g., "Website", "POS", "Imported"
   },
   { timestamps: true }
 );

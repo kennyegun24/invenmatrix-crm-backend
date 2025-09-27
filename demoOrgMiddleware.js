@@ -2,7 +2,7 @@
 const Organization = require("./schemas/organizationSchema");
 
 const demoOrgMiddleware = async (req, res, next) => {
-  console.log(req.params);
+  // console.log(req.params);
   try {
     if (req.query.demo === "true") {
       const demoOrg = await Organization.findOne({ isDemo: true });
