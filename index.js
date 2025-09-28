@@ -39,6 +39,9 @@ const total_sales = require("./routes/charts/totalSales");
 const monthlyIncome = require("./routes/charts/monthlyIncome");
 const customerCharts = require("./routes/charts/customer_charts/stocks-sales");
 
+// CRONS IMPORT
+const check_stock = require("./routes/crons/check-stock");
+
 dotenv.config();
 // app.use(express.json())
 app.use(
@@ -93,6 +96,9 @@ const startServer = async () => {
     app.use("/charts", monthlyIncome);
     app.use("/charts", customerCharts);
 
+    // CRON JOBS
+    app.use("/cron", check_stock);
+
     app.listen(4000, () => {
       console.log("Server is running on port 4000");
     });
@@ -100,14 +106,14 @@ const startServer = async () => {
     console.error("Failed to start server:", error);
   }
 };
-cron.schedule(
-  "* * * * *",
-  () => {
-    updateSomething();
-  },
-  {
-    scheduled: true,
-    timezone: "UTC",
-  }
-);
+// cron.schedule(
+//   "* * * * *",
+//   () => {
+//     updateSomething();
+//   },
+//   {
+//     scheduled: true,
+//     timezone: "UTC",
+//   }
+// );
 startServer();
