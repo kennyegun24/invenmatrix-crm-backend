@@ -24,11 +24,6 @@ async function updateSomething() {
   try {
     const groupedInventories = await inventorySchema.aggregate([
       {
-        $match: {
-          $expr: { $lt: ["$in_stock", "$low_stock_threshold"] },
-        },
-      },
-      {
         $lookup: {
           from: "organizations",
           localField: "organization",
@@ -38,11 +33,17 @@ async function updateSomething() {
       },
       { $unwind: "$organization" },
       {
+        $match: {
+          $expr: { $lt: ["$in_stock", "$low_stock_threshold"] },
+          "organization.isDemo": false || null, // ✅ correct place now
+        },
+      },
+      {
         $group: {
           _id: "$organization._id",
           organization_name: { $first: "$organization.business_name" },
-          inventories: { $push: "$product_name" }, // collect product names
-          no_of_out_of_stock: { $sum: 1 }, // count how many low-stock products
+          inventories: { $push: "$product_name" },
+          no_of_out_of_stock: { $sum: 1 },
         },
       },
       {
@@ -72,40 +73,18 @@ async function updateSomething() {
       },
     ]);
 
-    // sgMail.send(msg);
-    /*------------- data we need from each inventory...
-      1. _id
-      2. in_stock
-      3. organization name
-      4. product_name
-    [
-      {
-        _id: "9287uyhb987g3",
-        organization_name: "InnoVate Socials",
-        inventories: "Audi, Toyota",
-        no_of_out_of_stock: 10,
-      },
-      {
-        _id: "8yhbj876y87yvhjbi8",
-        organization_name: "Invenmatrix",
-        inventories: "Beads, Chivita, Hollandia",
-        no_of_out_of_stock: 3,
-        ],
-      },
-    ];
-    ---------------- */
-
+    // Example email loop
     for (const e of groupedInventories) {
-      // await sgMail.send(
-      //   msg({
-      //     company_name: e.organization_name,
-      //     no_of_out_of_stock: e.no_of_out_of_stock,
-      //     inventories: e.inventories,
-      //   })
-      // );
+      await sgMail.send(
+        msg({
+          company_name: e.organization_name,
+          no_of_out_of_stock: e.no_of_out_of_stock,
+          inventories: e.inventories,
+        })
+      );
     }
-    console.log(groupedInventories);
 
+    console.log(groupedInventories);
     console.log("Cron job completed successfully");
   } catch (err) {
     console.error("Error in cron job:", err);
