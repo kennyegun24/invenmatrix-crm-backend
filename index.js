@@ -100,7 +100,14 @@ const startServer = async () => {
     console.error("Failed to start server:", error);
   }
 };
-cron.schedule("* * * * *", () => {
-  updateSomething();
-});
+cron.schedule(
+  "* * * * *",
+  () => {
+    updateSomething();
+  },
+  {
+    scheduled: true,
+    timezone: "UTC",
+  }
+);
 startServer();
