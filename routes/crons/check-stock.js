@@ -2,7 +2,7 @@ const updateSomething = require("@/cron/check-stocks");
 const express = require("express");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/check-stock", async (req, res) => {
   try {
     try {
       await updateSomething();
