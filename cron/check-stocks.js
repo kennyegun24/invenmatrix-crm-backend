@@ -3,9 +3,9 @@ const inventorySchema = require("../schemas/inventorySchema");
 
 // This is your function that should always run
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const msg = ({ company_name, inventories, no_of_out_of_stock }) => {
+const msg = ({ company_name, inventories, no_of_out_of_stock, email }) => {
   return {
-    to: "test-069691s5s@srv1.mail-tester.com",
+    to: email,
     from: {
       name: "InvenMatrix",
       email: "kennyegun241@gmail.com",
@@ -42,6 +42,7 @@ async function updateSomething() {
         $group: {
           _id: "$organization._id",
           organization_name: { $first: "$organization.business_name" },
+          company_email: { $first: "$organization.company_email" },
           inventories: { $push: "$product_name" },
           no_of_out_of_stock: { $sum: 1 },
         },
@@ -68,11 +69,11 @@ async function updateSomething() {
               },
             },
           },
+          company_email: 1,
           no_of_out_of_stock: 1,
         },
       },
     ]);
-
     // Example email loop
     for (const e of groupedInventories) {
       await sgMail.send(
@@ -80,6 +81,7 @@ async function updateSomething() {
           company_name: e.organization_name,
           no_of_out_of_stock: e.no_of_out_of_stock,
           inventories: e.inventories,
+          email: e.company_email,
         })
       );
     }
