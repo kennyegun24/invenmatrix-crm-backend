@@ -6,7 +6,7 @@ const Inventory = require("../../../schemas/inventorySchema");
 const { error, success } = require("../../../utils/apiResponse");
 const mongoose = require("mongoose");
 const authMiddleware = require("../../../middleware");
-const demoOrgMiddleware = require("@/demoOrgMiddleware");
+const demoOrgMiddleware = require("../../../demoOrgMiddleware");
 
 // CREATE NEW INVENTORY
 router.post("/", authMiddleware, async (req, res) => {

@@ -5,10 +5,11 @@ const Inventory = require("../../../../schemas/inventorySchema");
 const Folder = require("../../../../schemas/folderSchema");
 const { error, success } = require("../../../../utils/apiResponse");
 const authMiddleware = require("../../../../middleware");
+const demoOrgMiddleware = require("../../../../demoOrgMiddleware");
 
 // GET /api/folders/root-and-orphans?organization=orgId
-router.get("/root-and-orphans", async (req, res) => {
-  const { orgId } = req.params;
+router.get("/root-and-orphans", demoOrgMiddleware, async (req, res) => {
+  const orgId = req.orgId;
   console.log(orgId);
   if (!orgId) {
     return error(res, "orgId ID is required", 400);

@@ -5,12 +5,14 @@ const demoOrgMiddleware = async (req, res, next) => {
   // console.log(req.params);
   try {
     if (req.query.demo === "true") {
+      console.log("DEMO IS VERY TRUE");
       const demoOrg = await Organization.findOne({ isDemo: true });
       if (!demoOrg) {
         return res.status(404).json({ message: "Demo organization not found" });
       }
       req.orgId = demoOrg._id;
     } else {
+      console.log("DEMO IS VERY FALSE");
       req.orgId = req.params?.orgId || null;
     }
 

@@ -32,6 +32,10 @@ const forgot_password = require("./routes/auth/forgot-password");
 const google = require("./routes/oauth/google/google");
 const google_redirect = require("./routes/oauth/google/redirect");
 const discord = require("./routes/oauth/discord/discord");
+const slack = require("./routes/oauth/slack/slack");
+const slack_redirect = require("./routes/oauth/slack/redirect");
+const notion = require("./routes/oauth/notion/notion");
+const notion_redirect = require("./routes/oauth/notion/redirect");
 
 // METRICS
 const total_sales_metric = require("./routes/charts/metrics/totalSales");
@@ -85,6 +89,10 @@ const startServer = async () => {
     app.use("/organization/:orgId/oauth/google", google);
     app.use("/oauth/google/", google_redirect);
     app.use("/oauth/discord", discord);
+    app.use("/organization/:orgId/oauth/slack", slack);
+    app.use("/oauth/slack/", slack_redirect);
+    app.use("/organization/:orgId/oauth/notion/", notion);
+    app.use("/oauth/notion/", notion_redirect);
 
     // AUTOMATION / ACCOUNTS ENDPOINTS
     app.use("/organization/:orgId/automation/accounts", accounts);

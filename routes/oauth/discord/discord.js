@@ -4,6 +4,7 @@ const organizationSchema = require("../../../schemas/organizationSchema");
 const accountsSchema = require("../../../schemas/accountsSchema");
 // const { saveOrgDiscordMapping, getOrgDiscordMapping } = require("./db");
 const CryptoJS = require("crypto-js");
+const fetchGuilds = require("./fetchGuilds");
 
 const router = express.Router();
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
@@ -67,12 +68,7 @@ router.get("/callback", async (req, res) => {
     });
 
     // fetch user's guilds
-    const guildsResp = await axios.get(
-      "https://discord.com/api/users/@me/guilds",
-      {
-        headers: { Authorization: `${token_type} ${access_token}` },
-      }
-    );
+    const guildsResp = await fetchGuilds(token_type, access_token);
 
     const _access_token = access_token
       ? CryptoJS.AES.encrypt(access_token, process.env.CRYPTO_JS_SEC).toString()
@@ -102,7 +98,7 @@ router.get("/callback", async (req, res) => {
         tokenType: token_type || "Bearer",
         expiresAt: expiresAt,
         lastLinkedAt: new Date(),
-        accounts: guildsResp?.data || [],
+        accounts: guildsResp || [],
       },
       $addToSet: { scopes: { $each: SCOPES } }, // avoid duplicates
       $setOnInsert: { organization: state.organizationId, provider },
@@ -116,8 +112,6 @@ router.get("/callback", async (req, res) => {
       update,
       { upsert: true, new: true }
     );
-    console.log("Guilds Response: ", guildsResp);
-    // console.log("User Response: ", userResp);
 
     // Redirect back to frontend (you can encode state.returnUrl)
     const returnUrl = state.returnUrl || "/";

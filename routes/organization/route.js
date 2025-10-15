@@ -4,7 +4,7 @@ const { error, success } = require("../../utils/apiResponse");
 const User = require("../../schemas/userSchema");
 const authMiddleware = require("../../middleware");
 const organizationSchema = require("../../schemas/organizationSchema");
-const demoOrgMiddleware = require("@/demoOrgMiddleware");
+const demoOrgMiddleware = require("../..//demoOrgMiddleware");
 const router = express.Router();
 
 // CREATE ORGANIZATION

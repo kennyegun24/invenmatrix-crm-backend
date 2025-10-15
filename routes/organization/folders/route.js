@@ -9,6 +9,7 @@ const userSchema = require("../../../schemas/userSchema");
 const {
   getAllFoldersWithNested,
 } = require("../../../utils/fetchNestedFolders");
+const demoOrgMiddleware = require("../../../demoOrgMiddleware");
 
 // CREATE NEW FOLDER
 router.post("/", authMiddleware, async (req, res) => {
@@ -50,21 +51,20 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // GET ALL FOLDERS IN ORGANIZATION
-router.get("/all", authMiddleware, async (req, res) => {
-  const { orgId } = req.params;
-  // console.log(orgId, "allfolders");
-  if (!orgId) {
-    return error(res, "orgId ID is required", 400);
-  }
-  try {
-    const getFolders = await getAllFoldersWithNested(orgId);
-    // console.log(getFolders);
-    return success(res, "", 200, { getFolders });
-  } catch (err) {
-    console.error("Error fetching root folders and orphaned inventory:", err);
-    return reqError(res, "Internal server error", 500);
-  }
-});
+// router.get("/all", authMiddleware, demoOrgMiddleware, async (req, res) => {
+//   const orgId = req.orgId;
+//   console.log("ORG ID", orgId);
+//   if (!orgId) {
+//     return reqError(res, "orgId ID is required", 400);
+//   }
+//   try {
+//     const getFolders = await getAllFoldersWithNested(orgId);
+//     return success(res, "", 200, { getFolders });
+//   } catch (err) {
+//     console.error("Error fetching root folders and orphaned inventory:", err);
+//     return reqError(res, "Internal server error", 500);
+//   }
+// });
 
 // DELETE FOLDER FROM ORGANIZATION
 router.delete("/:folderId", async (req, res) => {

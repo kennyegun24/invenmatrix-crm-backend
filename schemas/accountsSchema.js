@@ -8,12 +8,14 @@ const TokenSchema = new mongoose.Schema(
 
     accessToken: { type: String, required: true },
     refreshToken: { type: String },
-    expiresAt: { type: Date, required: true }, // token expiry time
+    expiresAt: { type: Date }, // token expiry time
 
     scope: { type: [String] }, // optional: track granted scopes
     lastUsedAt: { type: Date }, // when automation last used this token
 
-    selected_channel_id: { type: String }, // can be required if always needed
+    selected_channel_id: { type: String },
+    workspaceId: { type: String },
+    workspaceName: { type: String },
 
     accounts: [
       {

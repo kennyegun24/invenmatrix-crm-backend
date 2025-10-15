@@ -43,7 +43,7 @@ const flowSchema = new mongoose.Schema({
   name: { type: String, required: true }, // Optional: name of the flow
   description: { type: String, required: true }, // Optional: description of the flow
   nodes: [nodeSchema], // Array of nodes
-  recentRun: { type: Date, required: true },
+  recentRun: { type: Date },
   edges: [edgeSchema],
   activated: { type: Boolean, required: true },
   createdAt: { type: Date, default: Date.now },

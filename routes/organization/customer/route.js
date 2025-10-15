@@ -2,15 +2,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const Customer = require("../../../schemas/customerSchema"); // adjust path if needed
+const demoOrgMiddleware = require("../../../demoOrgMiddleware");
+const { success } = require("../../../utils/apiResponse");
 
 const router = express.Router({ mergeParams: true });
 
 // POST /customers - create a new customer
-router.post("/", async (req, res) => {
+router.post("/", demoOrgMiddleware, async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { orgId } = req.params;
+    const { orgId } = req.orgId;
     const customerData = req.body;
     console.log(customerData);
     console.log(orgId);
@@ -41,12 +43,9 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", demoOrgMiddleware, async (req, res) => {
   try {
-    const { orgId } = req.params;
-    console.log(
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni dolores recusandae, quas distinctio autem unde nulla praesentium obcaecati corporis, sit est! Nulla fugiat esse quam quidem natus aperiam saepe quo."
-    );
+    const orgId = req.orgId;
 
     if (!orgId) {
       return res.status(400).json({
@@ -55,11 +54,37 @@ router.get("/", async (req, res) => {
       });
     }
 
-    const customers = await Customer.find({ organization: orgId });
+    // Pagination
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
 
-    res.status(200).json({
-      success: true,
-      data: customers,
+    // Search
+    const search = req.query.search?.trim() || "";
+
+    // Build query
+    const query = { organization: orgId };
+    if (search) {
+      query.$or = [
+        { first_name: { $regex: search, $options: "i" } },
+        { last_name: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Run queries
+    const [customers, total] = await Promise.all([
+      Customer.find(query)
+        .sort({ createdAt: -1 }) // newest first
+        .skip(skip)
+        .limit(limit),
+      Customer.countDocuments(query),
+    ]);
+
+    return success(res, "All customers", 200, {
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      customers,
     });
   } catch (error) {
     console.error("Error fetching customers:", error);
