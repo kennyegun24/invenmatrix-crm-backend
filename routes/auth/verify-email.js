@@ -6,6 +6,7 @@ const router = express.Router();
 
 const sgMail = require("@sendgrid/mail");
 const { default: axios } = require("axios");
+const extractOobCode = require("../../utils/email/extractOOBcode");
 
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
