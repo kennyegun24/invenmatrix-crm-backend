@@ -68,7 +68,9 @@ router.post("/send-email-verification", async (req, res) => {
     const { userEmail } = req.body;
     if (!userEmail) return error(res, "Email is required", 400);
 
-    const findUser = await userSchema.findOne({ email_address: userEmail });
+    const findUser = await userSchema.findOne({
+      email_address: { $regex: new RegExp(`^${userEmail}$`, "i") },
+    });
     if (!findUser) return error(res, "User not found", 404);
 
     const user = await admin.auth().getUserByEmail(userEmail);

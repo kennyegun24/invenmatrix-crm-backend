@@ -86,7 +86,9 @@ router.post("/forgot-password", async (req, res) => {
       return error(res, "Email is required", 400);
     }
     console.log("user email");
-    const findUser = await userSchema.findOne({ email_address: userEmail });
+    const findUser = await userSchema.findOne({
+      email_address: { $regex: new RegExp(`^${userEmail}$`, "i") },
+    });
     if (!findUser) {
       return error(res, "User not found", 404);
     }
