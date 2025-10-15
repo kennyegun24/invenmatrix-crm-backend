@@ -37,11 +37,9 @@ async function sendVerificationEmail(userEmail) {
     }
 
     // ✅ Extract oobCode and build clean link
-    const { finalLink } = extractOobCode(
-      firebaseLink,
-      userEmail,
-      "verify-email"
-    );
+    const finalLink = extractOobCode(firebaseLink, userEmail, "verify-email");
+
+    console.log("FINAL LIK=NK: ", finalLink);
 
     // Send email with the cleaned-up link
     await sgMail.send(
