@@ -5,7 +5,7 @@ const orderSchema = require("../../../schemas/orderSchema");
 const inventorySchema = require("../../../schemas/inventorySchema");
 const customerSchema = require("../../../schemas/customerSchema");
 const demoOrgMiddleware = require("../../../demoOrgMiddleware");
-const { success, error } = require("../../utils/apiResponse");
+const { success, error } = require("../../../utils/apiResponse");
 
 const router = express.Router({ mergeParams: true });
 
