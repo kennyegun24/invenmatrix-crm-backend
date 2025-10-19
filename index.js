@@ -24,6 +24,9 @@ const updateSomething = require("./cron/check-stocks");
 const automation = require("./routes/organization/automation/route");
 const accounts = require("./routes/organization/automation/accounts/route");
 
+// FEATURE REQUESTS
+const featureRequest = require("./routes/features/feature_req");
+
 // AUTH
 const verify_email = require("./routes/auth/verify-email");
 const forgot_password = require("./routes/auth/forgot-password");
@@ -80,6 +83,9 @@ const startServer = async () => {
     app.use("/organization/:orgId/inventories", inventories);
     app.use("/organization/:orgId/customers", customer);
     app.use("/organization/:orgId/orders", order);
+
+    // FEATURE REQUESTS
+    app.use("/features/request", featureRequest);
 
     // AUTH ENDPOINTS
     app.use("/auth", verify_email);
