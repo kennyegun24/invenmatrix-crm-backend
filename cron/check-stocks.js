@@ -1,25 +1,8 @@
-const sgMail = require("@sendgrid/mail");
 const inventorySchema = require("../schemas/inventorySchema");
+const { lowStockAlertMsg, sgMail } = require("../emails/emails");
 
 // This is your function that should always run
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const msg = ({ company_name, inventories, no_of_out_of_stock, email }) => {
-  return {
-    to: email,
-    from: {
-      name: "InvenMatrix",
-      email: "kennyegun241@gmail.com",
-    },
-    // from: "test@example.com", // Use the email address or domain you verified above
-    subject: "LOW STOCK ALERT!",
-    templateId: "d-b5f02b77c77b480f8dc43b8e5be34ecb",
-    dynamicTemplateData: {
-      company_name,
-      inventories,
-      no_of_out_of_stock,
-    },
-  };
-};
+
 async function updateSomething() {
   try {
     const groupedInventories = await inventorySchema.aggregate([
@@ -77,7 +60,7 @@ async function updateSomething() {
     // Example email loop
     for (const e of groupedInventories) {
       await sgMail.send(
-        msg({
+        lowStockAlertMsg({
           company_name: e.organization_name,
           no_of_out_of_stock: e.no_of_out_of_stock,
           inventories: e.inventories,

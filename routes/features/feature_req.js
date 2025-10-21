@@ -2,14 +2,15 @@ const express = require("express");
 const router = express.Router();
 const FeatureRequest = require("../../schemas/FeatureRequestSchema");
 const User = require("../../schemas/userSchema");
-const authMiddleware = require("@/middleware");
+const authMiddleware = require("../../middleware");
 const { default: mongoose } = require("mongoose");
+const { error } = require("../../utils/apiResponse");
+const { sgMail, newCommentMsg } = require("@/emails/emails");
 
 // Middleware: requires user authentication (example)
 
 // Create a new feature request
 router.post("/", authMiddleware, async (req, res) => {
-  console.log(req.body);
   try {
     const uid = req.user?.uid;
     const { title, description, organization, tags, category } = req.body;
@@ -57,7 +58,6 @@ router.get("/", authMiddleware, async (req, res) => {
       limit = 10,
       mine,
     } = req.query;
-    console.log("MINE: "), mine;
     const skip = (page - 1) * limit;
 
     // 🧭 Build filter object dynamically
@@ -166,7 +166,6 @@ router.get("/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     const uid = req.user?.uid;
     const user = await User.findOne({ uid });
-    console.log(user);
     // 🧠 Step 1: Validate MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res
@@ -254,7 +253,17 @@ router.post("/:id/comments", authMiddleware, async (req, res) => {
 
     // 5️⃣ Save and return updated feature
     await feature.save();
-
+    const year = new Date();
+    await sgMail.send(
+      newCommentMsg({
+        comment_link: `${process.env.FRONTEND_URL}/dashboard/overview?tab=features-tab&q=feature-details&id=${id}`,
+        email: user.email_address,
+        post_text: `${feature.description.slice(0, 50)}...`,
+        commentor_name: `${user?.first_name} ${user?.last_name}`,
+        comment: message,
+        year: year.getFullYear(),
+      })
+    );
     res.status(200).json({
       message: "Comment added successfully.",
       feature,
@@ -361,7 +370,6 @@ router.get("/", authMiddleware, async (req, res) => {
       category !== null
     )
       query.category = category;
-    console.log("QUERY: ", query);
     // 🔍 Determine sorting logic
     let sort = {};
     switch (filter) {
@@ -445,4 +453,75 @@ router.get("/", authMiddleware, async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 });
+
+// EDIT REQUEST
+router.put("/:id", authMiddleware, async (req, res) => {
+  console.log(req.body);
+  try {
+    const uid = req.user?.uid; // User from the auth middleware
+    const { title, description, organization, tags, category } = req.body;
+    const { id } = req.params; // Get the ID of the feature request to be updated
+
+    // Validation: Ensure that at least one of title, description, tags, or category is provided
+    if (!title && !description && !tags && !category) {
+      return res.status(400).json({
+        error:
+          "At least one of title, description, tags, or category must be provided.",
+      });
+    }
+
+    const user = await User.findOne({ uid: uid });
+    const updates = {};
+    if (title) updates.title = title;
+    if (description) updates.description = description;
+    if (tags) updates.tags = tags;
+    if (tags) updates.tags = tags;
+    if (tags) updates.tags = tags;
+    if (category) updates.category = category;
+    // Find the existing feature request by ID
+    const existingRequest = await FeatureRequest.findByIdAndUpdate(id, {
+      ...updates,
+    });
+
+    if (!existingRequest) {
+      return res.status(404).json({ error: "Feature request not found." });
+    }
+
+    res.status(200).json({
+      message: "Feature request updated successfully.",
+      request: existingRequest,
+    });
+  } catch (err) {
+    console.error("Error updating feature request:", err);
+    res.status(500).json({ error: "Server error. Please try again later." });
+  }
+});
+
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const uid = req.user?.uid; // Authenticated user ID
+    const { id } = req.params; // Feature request ID
+
+    const user = await User.findOne({ uid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const deletedRequest = await FeatureRequest.findOneAndDelete({
+      _id: id,
+      user: user._id,
+    });
+
+    if (!deletedRequest) {
+      return res.status(404).json({ error: "Feature request not found" });
+    }
+
+    res.status(200).json({
+      message: "Feature request deleted successfully.",
+      request: deletedRequest,
+    });
+  } catch (err) {
+    console.error("Error deleting feature request:", err);
+    res.status(500).json({ error: "Server error. Please try again later." });
+  }
+});
+
 module.exports = router;

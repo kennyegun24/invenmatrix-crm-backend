@@ -4,20 +4,12 @@ const { error, success } = require("../../utils/apiResponse");
 const userSchema = require("../../schemas/userSchema");
 const router = express.Router();
 
-const sgMail = require("@sendgrid/mail");
 const { default: axios } = require("axios");
 const extractOobCode = require("../../utils/email/extractOOBcode");
+const { verifyEmailMsg, sgMail } = require("../../emails/emails");
 
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const msg = ({ link, email }) => ({
-  to: email,
-  from: { name: "InvenMatrix", email: "kennyegun241@gmail.com" },
-  subject: "Verify Your Email",
-  templateId: "d-bdcfc239d67544f487a832be0f48b2c1",
-  dynamicTemplateData: { link },
-});
 async function sendVerificationEmail(userEmail) {
   try {
     const actionCodeSettings = {
@@ -43,7 +35,7 @@ async function sendVerificationEmail(userEmail) {
 
     // Send email with the cleaned-up link
     await sgMail.send(
-      msg({
+      verifyEmailMsg({
         link: finalLink,
         email: userEmail,
       })

@@ -3,29 +3,11 @@ const express = require("express");
 const { error, success } = require("../../utils/apiResponse");
 const userSchema = require("../../schemas/userSchema");
 const router = express.Router();
-const sgMail = require("@sendgrid/mail");
 const { default: axios } = require("axios");
 const extractOobCode = require("../../utils/email/extractOOBcode");
+const { forgotPasswordMsg, sgMail } = require("../../emails/emails");
 
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-const msg = ({ redirect_link, email, full_name }) => {
-  return {
-    to: email,
-    from: {
-      name: "InvenMatrix",
-      email: "kennyegun241@gmail.com",
-    },
-    subject: "Password Reset Request",
-    templateId: "d-959732a448574f5596efeca10e44631e", // your SendGrid template
-    dynamicTemplateData: {
-      redirect_link,
-      full_name,
-    },
-  };
-};
 
 async function sendPasswordResetLink(userEmail, name) {
   try {
@@ -58,7 +40,7 @@ async function sendPasswordResetLink(userEmail, name) {
 
     // Send email with the final link
     await sgMail.send(
-      msg({
+      forgotPasswordMsg({
         redirect_link: finalLink,
         full_name: name,
         email: userEmail,
