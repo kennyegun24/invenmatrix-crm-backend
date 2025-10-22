@@ -12,7 +12,7 @@ const users = require("./routes/users/route");
 const check_org = require("./routes/users/check-org");
 const organization = require("./routes/organization/route");
 const team = require("./routes/organization/team/route");
-const roles = require("./routes/organization/roles/route");
+// const roles = require("./routes/organization/roles/route");
 const inventories = require("./routes/organization/inventories/route");
 const folder = require("./routes/organization/folders/route");
 const folderList = require("./routes/organization/folders/items/route");
@@ -23,6 +23,9 @@ const order = require("./routes/organization/orders/route");
 const updateSomething = require("./cron/check-stocks");
 const automation = require("./routes/organization/automation/route");
 const accounts = require("./routes/organization/automation/accounts/route");
+
+// ROLES
+const roles = require("./routes/roles/createRole");
 
 // FEATURE REQUESTS
 const featureRequest = require("./routes/features/feature_req");
@@ -75,7 +78,7 @@ const startServer = async () => {
     app.use("/user/check-org", check_org);
     app.use("/organization", organization);
     app.use("/organization/team", team);
-    app.use("/organization/roles", roles);
+    // app.use("/organization/roles", roles);
     app.use("/organization/:orgId/folders", folder);
     app.use("/organization/:orgId/folders/lists", folderList);
     app.use("/organization/:orgId/folders/move", moveFolder);
@@ -83,6 +86,9 @@ const startServer = async () => {
     app.use("/organization/:orgId/inventories", inventories);
     app.use("/organization/:orgId/customers", customer);
     app.use("/organization/:orgId/orders", order);
+
+    // ROLES/PERMISSIONS
+    app.use("/roles/:orgId", roles);
 
     // FEATURE REQUESTS
     app.use("/features/request", featureRequest);

@@ -3,30 +3,52 @@ const { error: sendError, success } = require("../../utils/apiResponse");
 const authMiddleware = require("../../middleware");
 const userSchema = require("../../schemas/userSchema");
 const organizationSchema = require("../../schemas/organizationSchema");
+const teamMemberSchema = require("../../schemas/teamMemberSchema");
+
 const router = express.Router();
 
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const uid = req.user?.uid;
-    // console.log("UID:", uid);
+    if (!uid) {
+      return sendError(res, "Unauthorized access", 401);
+    }
 
-    const getUser = await userSchema.findOne({ uid });
-    if (!getUser) {
+    // Find user by Firebase UID or Auth UID
+    const user = await userSchema.findOne({ uid });
+    if (!user) {
+      console.log("no user found");
       return sendError(res, "User not found", 404);
     }
 
-    // Find all orgs where user is either owner or in team_members
-    const orgs = await organizationSchema.find({
-      $or: [{ owner: getUser._id }, { "team_members.user": getUser._id }],
-    });
+    // 1️⃣ Find organizations owned by the user
+    const ownedOrgs = await organizationSchema.find({ owner: user._id });
 
-    if (!orgs || orgs.length === 0) {
+    // 2️⃣ Find all organizations where user is a team member
+    const teamMemberships = await teamMemberSchema.find({ userId: user._id });
+    console.log("TEAMMEMBERS: ", teamMemberships);
+
+    // Get unique org IDs (to avoid duplicates)
+    const orgIds = [
+      ...new Set([
+        ...ownedOrgs.map((org) => org._id.toString()),
+        ...teamMemberships.map((member) => member.organizationId.toString()),
+      ]),
+    ];
+    console.log("ORGIDS: ", orgIds);
+    if (orgIds.length === 0) {
       return sendError(res, "User has no organizations", 404);
     }
-    // console.log(orgs, "all organizations");
-    return success(res, "success", 200, {
+
+    // 3️⃣ Fetch organization details for all IDs
+    const organizations = await organizationSchema.find({
+      _id: { $in: orgIds },
+    });
+
+    console.log("ORGANIZATIONS: ", organizations);
+    return success(res, "Organizations fetched successfully", 200, {
       status: true,
-      organizations: orgs.map((org) => ({
+      organizations: organizations.map((org) => ({
         _id: org._id,
         company_name: org.business_name,
         company_logo: org.company_logo,
@@ -34,8 +56,8 @@ router.get("/", authMiddleware, async (req, res) => {
       })),
     });
   } catch (error) {
-    console.error(error);
-    return sendError(res, "something went wrong", 500);
+    console.error("Error fetching organizations:", error);
+    return sendError(res, "Something went wrong", 500);
   }
 });
 

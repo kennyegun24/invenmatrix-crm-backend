@@ -69,10 +69,33 @@ const newCommentMsg = ({
   },
 });
 
+const sendNewTeamInviteMail = ({ email, organization, link }) => ({
+  to: email,
+  from: { name: "InvenMatrix", email: "kennyegun241@gmail.com" },
+  subject: "Someone commented on your request!",
+  templateId: "d-c7a00e4e18fb427b83688cf91ae5530a",
+  dynamicTemplateData: {
+    organization,
+    link,
+  },
+});
+
+const sendTeamInviteMail = ({ email, organization }) => ({
+  to: email,
+  from: { name: "InvenMatrix", email: "kennyegun241@gmail.com" },
+  subject: "Someone commented on your request!",
+  templateId: "d-df8683c71c0c4241afe3c1bd2d2bb677",
+  dynamicTemplateData: {
+    organization,
+  },
+});
+
 module.exports = {
   forgotPasswordMsg,
   verifyEmailMsg,
   lowStockAlertMsg,
   sgMail,
   newCommentMsg,
+  sendNewTeamInviteMail,
+  sendTeamInviteMail,
 };

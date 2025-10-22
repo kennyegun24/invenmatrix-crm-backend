@@ -12,10 +12,11 @@ const RoleSchema = new mongoose.Schema({
   permissions: [
     {
       type: String,
-      enum: Object.values(PERMISSIONS),
+      enum: Object.keys(PERMISSIONS),
     },
   ], // e.g., ["can_create_automation", "can_invite_users"]
   is_default: { type: Boolean, default: false }, // default roles like Admin/Member
+  color: { type: String },
   created_at: { type: Date, default: Date.now },
 });
 
