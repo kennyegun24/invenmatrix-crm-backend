@@ -31,20 +31,21 @@ router.post("/:orgId/add-to-organization", async (req, res) => {
       console.log("org not found");
       return error(res, "Organization not found", 404);
     }
-    const existingUser = await User.findOne({ email_address: email });
-    const isAlreadyMember = await teamMemberSchema.findOne({
-      organizationId,
-      userId: existingUser._id,
+    const existingUser = await User.findOne({
+      email_address: { $regex: new RegExp(`^${email}$`, "i") },
     });
 
-    if (isAlreadyMember) {
-      console.log("member");
-      return res
-        .status(409)
-        .json({ message: "User already in the organization." });
-    }
     if (existingUser) {
-      console.log("user existing");
+      const isAlreadyMember = await teamMemberSchema.findOne({
+        organizationId,
+        userId: existingUser._id,
+      });
+      if (isAlreadyMember) {
+        console.log("member");
+        return res
+          .status(409)
+          .json({ message: "User already in the organization." });
+      }
       const saveToDb = await teamMemberSchema.create({
         organizationId,
         email,
@@ -52,6 +53,7 @@ router.post("/:orgId/add-to-organization", async (req, res) => {
         fullName: `${existingUser.first_name} ${existingUser.last_name}`,
         roles,
         invitedAt: Date.now(),
+        joinedAt: Date.now(),
       });
       await User.findByIdAndUpdate(existingUser._id, {
         $push: {
@@ -77,7 +79,7 @@ router.post("/:orgId/add-to-organization", async (req, res) => {
       expiresAt,
     });
     // TODO: SEND MEMBER INVITE MAIL
-    const link = `${process.env.FRONTEND_URL}/teams/invite?accept=true&code=${inviteToken}`;
+    const link = `${process.env.FRONTEND_URL}/invite?accept=true&code=${inviteToken}`;
     await sgMail.send(
       sendNewTeamInviteMail({
         link,
@@ -97,23 +99,59 @@ router.get("/:orgId/team", async (req, res) => {
   try {
     const { orgId } = req.params;
 
-    const organization = await Organization.findById(orgId).populate({
-      path: "team_members",
-      select: "first_name last_name email_address user_name status",
+    const members = await teamMemberSchema.find({
+      organizationId: new mongoose.Types.ObjectId(orgId),
     });
+
+    // 2. Return team members
+    return success(res, "Team members fetched successfully", 200, members);
+  } catch (error) {
+    return error(res, "Internal server error", 500);
+  }
+});
+
+// EDIT USER ROLE
+router.patch("/:orgId/members/:userId/roles", async (req, res) => {
+  try {
+    const { orgId, userId } = req.params;
+    const { roles } = req.body;
+
+    if (!roles || !Array.isArray(roles)) {
+      return error(res, "Roles must be provided as an array", 422);
+    }
+    console.log(userId);
+    const organizationId = new mongoose.Types.ObjectId(orgId);
+    const organization = await organizationSchema.findById(organizationId);
 
     if (!organization) {
       return error(res, "Organization not found", 404);
     }
 
-    // 2. Return team members
-    return success(
-      res,
-      "Team members fetched successfully",
-      200,
-      organization.team_members
+    const user = await User.findById(userId);
+    if (!user) {
+      return error(res, "User not found", 404);
+    }
+
+    // Update roles in teamMemberSchema (organization membership)
+    const member = await teamMemberSchema.findOneAndUpdate(
+      { organizationId, userId },
+      { $set: { roles } },
+      { new: true }
     );
-  } catch (error) {
+
+    if (!member) {
+      return error(res, "User is not a member of this organization", 404);
+    }
+
+    // Update roles inside user's organizations array
+    await User.updateOne(
+      { _id: userId, "organizations.organization": organizationId },
+      { $set: { "organizations.$.roles": roles } }
+    );
+
+    return success(res, "User roles updated successfully", 200, { member });
+  } catch (err) {
+    console.error(err);
     return error(res, "Internal server error", 500);
   }
 });

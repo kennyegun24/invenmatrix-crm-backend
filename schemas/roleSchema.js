@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { PERMISSIONS } = require("../utils/permissions");
 
 const RoleSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true }, // e.g., "Admin", "Manager"
+  name: { type: String, required: true }, // e.g., "Admin", "Manager"
   description: { type: String },
   organization: {
     type: mongoose.Schema.Types.ObjectId,

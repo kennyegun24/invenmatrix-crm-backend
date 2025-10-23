@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "Organization",
           required: true,
+          unique: true,
         },
         roles: { type: [String] },
         joined_at: { type: Date, default: Date.now },

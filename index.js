@@ -61,7 +61,7 @@ app.use(
       "https://www.invenmatrix.com",
       "http://172.20.10.3:3000",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     credentials: true,
   })
 );

@@ -239,7 +239,10 @@ router.post("/:id/comments", authMiddleware, async (req, res) => {
     }
 
     // 3️⃣ Find feature
-    const feature = await FeatureRequest.findById(id);
+    const feature = await FeatureRequest.findById(id).populate(
+      "user",
+      "first_name last_name email_address"
+    );
     if (!feature) {
       return res.status(404).json({ message: "Feature not found." });
     }
@@ -257,7 +260,7 @@ router.post("/:id/comments", authMiddleware, async (req, res) => {
     await sgMail.send(
       newCommentMsg({
         comment_link: `${process.env.FRONTEND_URL}/dashboard/overview?tab=features-tab&q=feature-details&id=${id}`,
-        email: user.email_address,
+        email: feature.user.email_address,
         post_text: `${feature.description.slice(0, 50)}...`,
         commentor_name: `${user?.first_name} ${user?.last_name}`,
         comment: message,

@@ -36,6 +36,7 @@ router.get("/", authMiddleware, async (req, res) => {
       ]),
     ];
     console.log("ORGIDS: ", orgIds);
+    console.log("ORGIDS: ", orgIds);
     if (orgIds.length === 0) {
       return sendError(res, "User has no organizations", 404);
     }

@@ -2,11 +2,14 @@ const express = require("express");
 const { error, success } = require("../../utils/apiResponse");
 const userSchema = require("../../schemas/userSchema");
 const authMiddleware = require("../../middleware");
+const inviteSchema = require("@/schemas/inviteSchema");
+const organizationSchema = require("@/schemas/organizationSchema");
+const teamMemberSchema = require("@/schemas/teamMemberSchema");
 const router = express.Router();
 
 router.post("/new", authMiddleware, async (req, res) => {
   try {
-    const { email, first_name, last_name } = req.body;
+    const { email, first_name, last_name, invite_code } = req.body;
     // console.log(email, first_name, last_name);
     if (!email || !first_name || !last_name) {
       return error(res, "Required params not present", 400);
@@ -15,12 +18,46 @@ router.post("/new", authMiddleware, async (req, res) => {
     const findUser = await userSchema.findOne({ email_address: email });
     // console.log(findUser);
     if (findUser) return error(res, "User already exist!", 400);
-    await userSchema.create({
+    const user = await userSchema.create({
       email_address: email,
       first_name,
       last_name,
       uid,
     });
+
+    if (invite_code) {
+      const invite = await inviteSchema.findOneAndUpdate(
+        {
+          inviteToken: invite_code,
+          email: { $regex: new RegExp(`^${email}$`, "i") },
+        },
+        {
+          status: "accepted",
+        }
+      );
+      if (!invite) {
+        return success(res, "User created, invite failed", 201);
+      }
+      await teamMemberSchema.findOneAndUpdate(
+        { organizationId: invite.organization },
+        {
+          userId: user._id,
+          email,
+          fullName: `${first_name} ${last_name}`,
+          roles: invite.roles,
+          joinedAt: Date.now(),
+        }
+      );
+      await userSchema.findByIdAndUpdate(user._id, {
+        $push: {
+          organizations: {
+            organization: invite.organization,
+            roles: invite.roles,
+          },
+        },
+      });
+      return success(res, "User created, invite accepted", 201);
+    }
     return success(res, "User created", 201);
   } catch (error) {
     console.log(error);
