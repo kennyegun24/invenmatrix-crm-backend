@@ -123,16 +123,17 @@ router.put("/:folderId", async (req, res) => {
   const { folderId } = req.params;
   console.log(folderId);
   const { folder_name, folder_image } = req.body;
-
+  console.log("FOLDER IMAGE", folder_image);
   if (!folder_name && !folder_image)
     return reqError(res, "Folder name is required", 400);
+  const update = {};
+  if (folder_image) update.folder_image = folder_image;
+  if (folder_name) update.folder_name = folder_name;
 
   try {
-    const folder = await folderSchema.findByIdAndUpdate(
-      folderId,
-      { folder_name, folder_image },
-      { new: true }
-    );
+    const folder = await folderSchema.findByIdAndUpdate(folderId, update, {
+      new: true,
+    });
 
     if (!folder) return reqError(res, "Folder not found", 404);
 

@@ -156,6 +156,45 @@ router.patch("/:orgId/members/:userId/roles", async (req, res) => {
   }
 });
 
+// EDIT USER STATUS
+router.patch("/:orgId/members/:userId/status", async (req, res) => {
+  try {
+    const { orgId, userId } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return error(res, "Status must be provided as an array", 422);
+    }
+    const organizationId = new mongoose.Types.ObjectId(orgId);
+    const organization = await organizationSchema.findById(organizationId);
+
+    if (!organization) {
+      return error(res, "Organization not found", 404);
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return error(res, "User not found", 404);
+    }
+
+    // Update status in teamMemberSchema (organization membership)
+    const member = await teamMemberSchema.findOneAndUpdate(
+      { organizationId, userId },
+      { $set: { status } },
+      { new: true }
+    );
+
+    if (!member) {
+      return error(res, "User is not a member of this organization", 404);
+    }
+
+    return success(res, "User status updated successfully", 200, { member });
+  } catch (err) {
+    console.error(err);
+    return error(res, "Internal server error", 500);
+  }
+});
+
 // DELETE MEMBERS FROM ORGANIZATION
 router.delete("/:orgId/team/:userId", async (req, res) => {
   try {

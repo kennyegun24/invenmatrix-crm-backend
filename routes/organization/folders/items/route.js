@@ -10,11 +10,11 @@ const demoOrgMiddleware = require("../../../../demoOrgMiddleware");
 // GET /api/folders/root-and-orphans?organization=orgId
 router.get("/root-and-orphans", demoOrgMiddleware, async (req, res) => {
   const orgId = req.orgId;
-  console.log(orgId);
+  // console.log(orgId);
   if (!orgId) {
     return error(res, "orgId ID is required", 400);
   }
-  console.log(orgId);
+  // console.log(orgId);
   try {
     // Fetch all root folders (no parent) in the org
     const rootFolders = await Folder.find({
@@ -33,7 +33,7 @@ router.get("/root-and-orphans", demoOrgMiddleware, async (req, res) => {
     //   organization: orgId,
     //   _id: { $nin: usedInventoryIds },
     // });
-    console.log(rootFolders);
+    // console.log(rootFolders);
     return success(res, "", 200, { rootFolders });
   } catch (err) {
     console.error("Error fetching root folders and orphaned inventory:", err);

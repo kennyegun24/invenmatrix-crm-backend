@@ -104,12 +104,12 @@ router.get("/", demoOrgMiddleware, async (req, res) => {
       category !== "All"
     ) {
       query.category = category;
-      console.log(category, "category");
-      console.log(typeof category);
+      // console.log(category, "category");
+      // console.log(typeof category);
     }
-    console.log(category);
+    // console.log(category);
     const inventories = await Inventory.find(query).lean();
-    console.log(inventories);
+    // console.log(inventories);
     // if (inventories.length > 0) {
     return success(res, "Inventories fetched successfully", 200, inventories);
     // }
@@ -118,6 +118,69 @@ router.get("/", demoOrgMiddleware, async (req, res) => {
   } catch (err) {
     console.log(err);
     return error(res, "Something went wrong", 500);
+  }
+});
+
+router.get("/table", demoOrgMiddleware, async (req, res) => {
+  try {
+    const orgId = req.orgId;
+
+    // Pagination
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    const search = req.query.search?.trim() || "";
+    // console.log(search);
+    const pipeline = [
+      { $match: { organization: new mongoose.Types.ObjectId(orgId) } },
+    ];
+
+    if (search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { product_name: { $regex: search, $options: "i" } },
+            { category: { $regex: search, $options: "i" } },
+            { tags: { $regex: search, $options: "i" } },
+            { supplier_name: { $regex: search, $options: "i" } },
+            { status: { $regex: search, $options: "i" } },
+            { location: { $regex: search, $options: "i" } },
+            { barcode: { $regex: search, $options: "i" } },
+          ],
+        },
+      });
+    }
+
+    const aggregation = [
+      ...pipeline,
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          data: [
+            { $sort: { createdAt: -1, _id: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+          ],
+        },
+      },
+    ];
+
+    const result = await Inventory.aggregate(aggregation);
+
+    const total = result[0]?.metadata[0]?.total || 0;
+    const data = result[0]?.data || [];
+    const totalPages = Math.ceil(total / limit);
+
+    return success(res, "All inventory items", 200, {
+      total,
+      page,
+      totalPages,
+      data,
+    });
+  } catch (err) {
+    console.log(err);
+    return error(res, "SOMETHING WENT WRONG", 500);
   }
 });
 
